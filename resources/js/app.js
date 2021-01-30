@@ -22,6 +22,10 @@ window.Vue = require('vue').default;
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('sidebar', require('./components/Sidebar/Sidebar.vue').default);
 Vue.component('setting', require('./components/Setting/Setting.vue').default);
+Vue.component('dhaka', require('./components/Dhaka/Dhaka.vue').default);
+Vue.component('roles-index', require('./components/Setting/RolesIndex.vue').default);
+Vue.component('assign-roles', require('./components/Setting/AssignRoles.vue').default);
+Vue.component('user-list', require('./components/User/UserList.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -4,8 +4,9 @@
 $data = "$_SERVER[REQUEST_URI]";
 ?>
 <sidebar
-    route={{ $data }}
+    route={{$data}}
     dhaka={{ $permission->canManageDhaka() }}
+    user_list={{ $permission->canManageUser() }}
 
 ></sidebar>
 

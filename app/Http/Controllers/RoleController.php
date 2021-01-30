@@ -14,7 +14,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::with('user')->select('id','title','created_by')->get();
+        return Role::with('user')->select('id', 'title', 'created_by')->get();
 
     }
 
@@ -31,7 +31,7 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -39,22 +39,21 @@ class RoleController extends Controller
         $this->validate($request, [
             'title' => 'required',
         ]);
-//        dd(auth()->user()->id);
-         $permissions = $request->input('permissions');
-         $serializePermission = serialize($permissions);
+        $permissions = $request->input('permissions');
+        $serializePermission = serialize($permissions);
 
         Role::create([
-            'title'=>$request->title,
-            'permissions'=>$serializePermission,
-            'created_by'=>auth()->user()->id,
+            'title' => $request->title,
+            'permissions' => $serializePermission,
+            'created_by' => auth()->user()->id,
         ]);
-        return response()->json(['msg'=>'Role added successfully.']);
+        return response()->json(['msg' => 'Role added successfully.']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -65,34 +64,51 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        //
+        $data = Role::find($id);
+        $permissions = unserialize($data->permissions);
+        $data->permissions = $permissions;
+        return $data;
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required',
+        ]);
+        $permissions = $request->input('permissions');
+        $serializePermission = serialize($permissions);
+
+        Role::where('id', $id)
+            ->update([
+                'title' => $request->title,
+                'permissions' => $serializePermission,
+                'created_by' => auth()->user()->id,
+            ]);
+        return response()->json(['msg' => 'Role Updated successfully.']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        Role::find($id)->delete();
+        return response()->json(['msg' => 'Role Deleted successfully.']);
     }
 }

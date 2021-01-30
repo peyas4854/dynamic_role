@@ -1,8 +1,11 @@
 <template>
     <div class="container">
+
         <div class="card">
+
+
             <div class="card-header d-flex">
-                <h4 class="mr-auto"> Settings </h4>
+                <h4 class="mr-auto"> Roles </h4>
                 <button type="button" class="btn btn-primary"
                         data-toggle="modal"
                         data-target="#roleModal"
@@ -25,8 +28,10 @@
                         <td>{{ data.user.name }}</td>
 
                         <td class="text-right">
-                            <button class="btn btn-info btn-sm"> Edit</button>
-                            <button class="btn btn-danger btn-sm"> Delete</button>
+                            <button class="btn btn-info btn-sm" data-toggle="modal"
+                                    data-target="#roleModal" @click="editRoles(data.id)"> Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" @click="deleteMethod(data.id)"> Delete</button>
                         </td>
                     </tr>
 
@@ -46,40 +51,59 @@
                                 <div class="form-group col-md-12">
                                     <label for="role-title">Title</label>
                                     <input name="title" id="role-title" class="form-control" type="text"
-                                           v-model="title" placeholder="title">
+                                           v-model="title" placeholder="Enter your role title">
                                 </div>
                                 <hr>
                                 <div class="form-group col-md-12">
-                                    <h6 class="m-0">application</h6>
+                                    <h6 class="m-0">Dashboard</h6>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="dashboard-role-1"
+                                               v-model="check"
+                                               value="can_see_dashboard"
+                                               name="can_see_dashboard"/>
+                                        <label class="custom-control-label" for="dashboard-role-1">can see dashboard</label>
+
+                                    </div>
+
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h6 class="m-0">Settings</h6>
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="setting-role-1"
                                                v-model="check"
-                                               value="can_edit_application_setting"
-                                               name="can_edit_application_setting"/>
-                                        <label class="custom-control-label" for="setting-role-1">can_edit_application_setting</label>
-                                        <br>
+                                               value="can_edit_setting"
+                                               name="can_edit_setting"/>
+                                        <label class="custom-control-label" for="setting-role-1">can edit setting</label>
+
                                     </div>
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="email-role-2"
                                                v-model="check"
-                                               value="can_edit_email_setting" name="can_edit_email_setting"/>
+                                               value="can_see_setting" name="can_see_setting"/>
                                         <label class="custom-control-label"
-                                               for="email-role-2">can_manage_email_settings</label> <br>
+                                               for="email-role-2">can see setting</label> <br>
+                                    </div>
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <h6 class="m-0">User List</h6>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="user-list-1"
+                                               v-model="check"
+                                               value="can_edit_user_list"
+                                               name="can_edit_user_list"/>
+                                        <label class="custom-control-label" for="user-list-1">can edit user list</label>
+
                                     </div>
                                     <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" id="email-role-3"
+                                        <input type="checkbox" class="custom-control-input" id="user-list-2"
                                                v-model="check"
-                                               value="can_edit_email_template" name="can_edit_email_template"/>
+                                               value="can_see_user_list" name="can_see_user_list"/>
                                         <label class="custom-control-label"
-                                               for="email-role-3">can_edit_email_template</label>
+                                               for="user-list-2">can_see_user_list</label> <br>
                                     </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" id="notification-role-1"
-                                               v-model="check"
-                                               value="can_manage_notification_settings"
-                                               name="can_manage_notification_settings"/>
-                                        <label class="custom-control-label" for="notification-role-1">can_manage_notification_settings</label>
-                                    </div>
+
                                 </div>
                                 <div class="form-group col-md-12">
                                     <h6 class="m-0">Dhaka</h6>
@@ -147,33 +171,38 @@
 </template>
 
 <script>
+
     export default {
         name: "Setting.vue",
+
         data() {
             return {
                 title: '',
                 check: [],
                 inputFields: {},
                 modal: false,
-                roleData:[],
+                roleData: [],
+                isEdit: {
+                    status: false,
+                    id: '',
+                },
             }
         },
         mounted() {
-            // this.modalCloseAction('#roleModal');
+            this.modalCloseAction('#roleModal');
             this.getRoles('/role');
-
         },
         methods: {
             modalOpen() {
-                console.log('open');
+                console.log('reset');
+                this.reset();
                 this.modal = true;
+
             },
             modalCloseAction(modalID) {
-
                 let instance = this;
-
                 $(modalID).on('hidden.bs.modal', function (e) {
-                    instance.modal = false;
+                    // instance.modal = false;
                     console.log('modal  close');
                 });
             },
@@ -183,36 +212,78 @@
                     title: this.title,
                     permissions: this.check,
                 };
-
-                axios.post('/role', this.inputFields)
-                    .then(function (response) {
-                        console.log(response.data);
-
-
-                        $('#roleModal').modal('hide');
-                        // instance.modalCloseAction('#roleModal');
-                        instance.title = '';
-                        instance.check = [];
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                if (this.isEdit.status) {
+                    console.log('id', this.isEdit.id)
+                    axios.put('/role/' + this.isEdit.id, this.inputFields)
+                        .then(function (response) {
+                            $('#roleModal').modal('hide');
+                            instance.title = '';
+                            instance.check = [];
+                            instance.isEdit.status = false;
+                            instance.getRoles('/role');
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                } else {
+                    axios.post('/role', this.inputFields)
+                        .then(function (response) {
+                            $('#roleModal').modal('hide');
+                            instance.title = '';
+                            instance.check = [];
+                            instance.getRoles('/role');
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
 
             },
-            getRoles(route){
+            getRoles(route) {
                 let instance = this;
-
                 axios.get(route)
                     .then(function (response) {
                         // handle success
-
-                        instance.roleData=response.data;
-
+                        instance.roleData = response.data;
                     })
                     .catch(function (error) {
                         // handle error
                         console.log(error);
                     })
+            },
+            editRoles(id) {
+                let instance = this;
+                instance.isEdit.status = true;
+                instance.isEdit.id = id;
+                console.log('id', id)
+                axios.get('/role/' + id + '/edit')
+                    .then(function (response) {
+                        console.log('response', response)
+                        instance.title = response.data.title;
+                        instance.check = response.data.permissions;
+                        instance.modal = true;
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    })
+            },
+            deleteMethod(id){
+                let instance = this;
+                axios.delete('/role/' + id)
+                    .then(function (response) {
+                        console.log('response', response)
+                        instance.getRoles('/role');
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    })
+
+            },
+            reset() {
+                this.title = '';
+                this.check = [];
             }
         }
     }

@@ -22,7 +22,7 @@
 </head>
 <body>
 <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm mb-3">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
                 {{ config('app.name', 'Laravel') }}
@@ -79,7 +79,6 @@
         </div>
     </nav>
     <div class="container-fluid">
-
         @auth
             <div class="row">
                 <div class="col-md-3">
