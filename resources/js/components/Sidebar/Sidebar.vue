@@ -5,7 +5,7 @@
             <div class="card-body">
                 <ul class="nav flex-column">
                     <li class="nav-item" >
-                        <a class="nav-link" :class="[route == '/home' ? 'active' : '', 'nav-link' ]" href="/home">Dahsboard</a>
+                        <a class="nav-link" :class="[route == '/home' ? 'active' : '', 'nav-link' ]" v-if="dashboard=='read-only'" href="/home">Dahsboard</a>
                     </li>
                     <li class="nav-item" v-if="dhaka == 'manage' || dhaka=='read-only'">
                         <a :class="[route == '/dhaka' ? 'active' : '', 'nav-link' ]" href="/dhaka">Dhaka</a>
@@ -23,6 +23,7 @@
                     </li>
                     <li class="nav-item " >
                         <a
+                            v-if="settings == 'manage' || settings == 'read_only'"
                            :class="[route == '/settings' ? 'active' : '', 'nav-link' ]"
 
                            href="/settings">Settings</a>
@@ -36,10 +37,11 @@
 <script>
     export default {
         name: "Sidebar.vue",
-        props:['dhaka','route','user_list'],
-mounted() {
-    console.log('user_list',this.user_list);
-}
+        props:['dhaka','route','user_list','dashboard','settings'],
+        mounted(){
+            console.log( 'user_list',this.user_list);
+        }
+
     }
 </script>
 

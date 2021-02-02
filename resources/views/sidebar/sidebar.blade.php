@@ -7,6 +7,8 @@ $data = "$_SERVER[REQUEST_URI]";
     route={{$data}}
     dhaka={{ $permission->canManageDhaka() }}
     user_list={{ $permission->canManageUser() }}
+    dashboard={{ $permission->canSeeDashboard() }}
+    settings={{ $permission->canManageSettings() }}
 
 ></sidebar>
 

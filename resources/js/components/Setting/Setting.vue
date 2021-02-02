@@ -2,14 +2,13 @@
     <div class="container">
 
         <div class="card">
-
-
             <div class="card-header d-flex">
                 <h4 class="mr-auto"> Roles </h4>
                 <button type="button" class="btn btn-primary"
                         data-toggle="modal"
                         data-target="#roleModal"
                         @click="modalOpen()"
+                        v-if="permission == 'manage'"
                 >Add
                 </button>
             </div>
@@ -19,22 +18,20 @@
                     <tr>
                         <th>Title</th>
                         <th>Created By</th>
-                        <th class="text-right">Action</th>
+                        <th class="text-right" v-if="permission == 'manage'">Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(data,i) in roleData" :key="i">
-                        <td>{{ data.title }}</td>
-                        <td>{{ data.user.name }}</td>
-
-                        <td class="text-right">
+                        <td v-if="data.title">{{ data.title }}</td>
+                        <td v-if="data.user">{{ data.user.name }}</td>
+                        <td class="text-right" v-if="permission == 'manage'">
                             <button class="btn btn-info btn-sm" data-toggle="modal"
                                     data-target="#roleModal" @click="editRoles(data.id)"> Edit
                             </button>
                             <button class="btn btn-danger btn-sm" @click="deleteMethod(data.id)"> Delete</button>
                         </td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>
@@ -158,8 +155,8 @@
                             </form>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="store">Save</button>
+                        <div class="modal-footer" >
+                            <button type="button" class="btn btn-primary" @click="store" >Save</button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
 
@@ -174,6 +171,7 @@
 
     export default {
         name: "Setting.vue",
+        props:['permission'],
 
         data() {
             return {
@@ -189,12 +187,12 @@
             }
         },
         mounted() {
+            // console.log('dfg',this.permission);
             this.modalCloseAction('#roleModal');
             this.getRoles('/role');
         },
         methods: {
             modalOpen() {
-                console.log('reset');
                 this.reset();
                 this.modal = true;
 
@@ -202,7 +200,6 @@
             modalCloseAction(modalID) {
                 let instance = this;
                 $(modalID).on('hidden.bs.modal', function (e) {
-                    // instance.modal = false;
                     console.log('modal  close');
                 });
             },
@@ -245,6 +242,7 @@
                     .then(function (response) {
                         // handle success
                         instance.roleData = response.data;
+                        // console.log( 'getRoles',response);
                     })
                     .catch(function (error) {
                         // handle error

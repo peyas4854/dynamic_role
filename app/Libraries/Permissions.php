@@ -26,16 +26,17 @@ class Permissions
 
     public function hasPermission($per)
     {
+
         $role = Auth::user()->role_id;
-
         if ($role > 0) {
-
             $usersPermission = Role::select('permissions')->where('id', $role)->first();
-
+            // role_id not find in roles table, permission denied.
+            if ($usersPermission === null) {
+                error_log('none');
+                return false;
+            }
             $usersPermission = $usersPermission->permissions;
-
             $usersPermission = unserialize($usersPermission);
-
             if (in_array($per, $usersPermission)) return true;
             else return false;
 

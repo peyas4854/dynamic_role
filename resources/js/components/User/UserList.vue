@@ -151,7 +151,7 @@
                 axios.get(route)
                     .then(function (response) {
                         // handle success
-                        console.log('getUser', response)
+                        // console.log('getUser', response)
                         instance.userData = response.data;
                     })
                     .catch(function (error) {

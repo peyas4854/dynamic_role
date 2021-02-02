@@ -1,6 +1,9 @@
 @extends('layouts.app')
+@inject('permission','App\Http\Controllers\PermissionController')
 
 @section('content')
+   <setting
 
-   <setting></setting>
+       permission={{ $permission->canManageSettings() }}
+   ></setting>
 @endsection

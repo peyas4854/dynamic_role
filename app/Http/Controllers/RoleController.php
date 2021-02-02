@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\PermissionController as PermissionController;
 
-class RoleController extends Controller
+
+class RoleController extends PermissionController
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +17,10 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::with('user')->select('id', 'title', 'created_by')->get();
+        if ($this->canManageUser() === 'manage' || $this->canManageUser() === 'read_only') {
+            return Role::with('user')->select('id', 'title', 'created_by')->get();
+        }
+        return response()->json(['msg' => "Permission denied."]);
 
     }
 

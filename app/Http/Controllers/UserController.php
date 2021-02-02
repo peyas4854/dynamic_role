@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\PermissionController as PermissionController;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+
+class UserController extends PermissionController
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +17,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::with('role:id,title')->select('id', 'name', 'created_at', 'role_id','is_admin')->get();
+        if ($this->canManageUser() === 'manage' || $this->canManageUser() === 'read_only') {
+            return User::with('role:id,title')->select('id', 'name', 'created_at', 'role_id', 'is_admin')->get();
+        }
+        return response()->json(['msg' => "Permission denied."]);
     }
 
     /**
@@ -58,7 +63,12 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        return User::find($id);
+
+        if ($this->canManageUser() === 'manage') {
+            return User::find($id);
+        }
+        return response()->json(['msg' => "Permission denied."]);
+
     }
 
     /**
@@ -70,15 +80,16 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-
-//        dd($request->all());
+        if ($this->canManageUser() === 'manage') {
             User::where('id', $id)
-            ->update([
-                "role_id" => $request->role_id,
-                "is_admin" => $request->role_id == 0 ? 1 : 0,
-            ]);
-        return response()->json(['msg' => 'user Role Updated successfully.']);
+                ->update([
+                    "role_id" => $request->role_id,
+                    "is_admin" => $request->role_id == 0 ? 1 : 0,
+                ]);
+            return response()->json(['msg' => 'user Role Updated successfully.']);
+        }
+        return response()->json(['msg' => "Permission denied."]);
+
     }
 
     /**
